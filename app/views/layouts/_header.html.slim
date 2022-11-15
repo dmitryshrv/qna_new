@@ -1,0 +1,13 @@
+header
+  nav class="navbar navbar-light bg-light"
+    div class="container-fluid d-flex justify-content-between"
+      h1
+      = link_to 'QnA', root_path, class: "navbar-brand"
+
+      span class="navbar-text"
+        -if user_signed_in?
+          p class="nav user" "Welcome"
+          = link_to "Sign out", destroy_user_session_path, method: :delete, data:{ "turbo-method": "DELETE" }
+        -else
+          = link_to "SignUp", new_user_registration_path, class:"btn btn-info mr-3"
+          = link_to "Sign in", new_user_session_path, class: "btn btn-warning"
