@@ -14,11 +14,11 @@ feature 'User can delete his answer', %q{
   describe 'Authenticated user' do
     background { sign_in(user_one) }
 
-    scenario 'User tries to delete his answer' do
+    scenario 'User tries to delete his answer', js:true do
       visit question_path(question)
       click_on 'Delete answer'
+      page.accept_alert
 
-      expect(page).to have_content 'Your Answer successfully deleted!'
       expect(page).not_to have_content answer_one.body
     end
 

@@ -16,7 +16,7 @@ gem 'jbuilder', '~> 2.7'
 gem 'bootsnap', '>= 1.4.4', require: false
 gem "slim-rails"
 gem 'devise'
-gem 'jquery-rails'
+#gem 'jquery-rails'
 gem "net-smtp"
 
 group :development, :test do

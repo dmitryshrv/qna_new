@@ -5,9 +5,12 @@
 
 import Rails from "@rails/ujs"
 import Turbolinks from "turbolinks"
+require('jquery')
 import * as ActiveStorage from "@rails/activestorage"
 import "channels"
 import "bootstrap"
+import "./answers"
+import "./question"
 import "../stylesheets/application"
 
 Rails.start()

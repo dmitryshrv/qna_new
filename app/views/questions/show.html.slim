@@ -1,24 +1,38 @@
 .container
-  = render 'shared/errors', resource: @answer
-  h1 Question
 
-  h2 =question.title
-  p =question.body
-  -if current_user == question.user
+  h1 Question
+  .question
+    h2.question-title
+      =question.title
+    p.question-body
+      =question.body
+
+    -if current_user == question.user
+      p =link_to "Edit", '#', class:"edit-question-link", data: {question_id: question.id}
+
+      .question-errors
+        = render 'shared/errors', resource: question
+
+      =form_with model: question, class: "hidden", html: {id: "edit-question-form"},local: false do |f|
+        = f.label :title
+        = f.text_field :title
+        = f.label :body
+        = f.text_area :body
+        = f.submit 'Save'
+
       =button_to 'Delete question', question_path(question), method: :delete, data: {confirm: 'Are you sure?'}
 
   h2 Answers
+  .answers
+    = render question.answers
 
-  -question.answers.each do |answer|
-    -if answer.persisted?
-      div class="mb-3"
-      =answer.body
-      -if current_user == answer.user
-        =button_to 'Delete answer', answer_path(answer), method: :delete, data: {confirm: 'Are you sure?'}
+  -if user_signed_in?
+    = form_with model: [question, question.answers.build], class:"new-answer", local: false do |f|
+      .new-answer-errors
+        = render 'shared/errors', resource: @answer
 
-  = form_with model: [question, question.answers.build], data: {turbo: false}, local: true do |f|
-    = f.label :body
-    = f.text_area :body
-    = f.submit 'Answer', class:"btn btn-info"
+      = f.label :body
+      = f.text_area :body
+      = f.submit 'Give answer', class:"btn btn-info"
 
   =link_to 'Back', questions_path
