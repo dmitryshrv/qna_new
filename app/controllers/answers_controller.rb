@@ -19,6 +19,14 @@ class AnswersController < ApplicationController
     end
   end
 
+  def best
+    @question = answer.question
+
+    if current_user == @question.user
+      @question.mark_as_best(answer)
+    end
+  end
+
   private
 
   def question

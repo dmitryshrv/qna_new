@@ -24,7 +24,9 @@
 
   h2 Answers
   .answers
-    = render question.answers
+    -if @best_answer
+      =render @best_answer
+    = render @other_answers
 
   -if user_signed_in?
     = form_with model: [question, question.answers.build], class:"new-answer", local: false do |f|

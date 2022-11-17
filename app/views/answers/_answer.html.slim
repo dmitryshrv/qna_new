@@ -1,6 +1,16 @@
 div id="answer-#{answer.id}" class="d-flex mb-3"
+  -if answer == @best_answer
+      h3
+        span.best-label Best Answer:
+
   -if answer.persisted?
       =answer.body
+
+  -if current_user == @question.user
+    =button_to "Make best",
+                best_answer_path(answer),
+                class: "make-best-btn #{'hidden' if answer==@best_answer }",
+                remote: :true
 
   -if current_user == answer.user
     p =link_to "Edit", '#', class:"edit-answer-link", data: {answer_id: answer.id}
@@ -13,4 +23,8 @@ div id="answer-#{answer.id}" class="d-flex mb-3"
       =f.submit 'Save'
 
     div
-      =button_to 'Delete answer', answer_path(answer), method: :delete, remote: true, data: {confirm: 'Are you sure?'}
+      =button_to 'Delete answer',
+                  answer_path(answer),
+                  method: :delete,
+                  remote: true,
+                  data: {confirm: 'Are you sure?'}
