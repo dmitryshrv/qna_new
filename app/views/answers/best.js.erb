@@ -1,0 +1,12 @@
+<% if @question.best_answer == @answer %>
+  answerID = $('#answer-' + <%= @answer.id %>)
+  makeBestButton = $('#answer-' + <%= @answer.id %> + ' .make-best-btn')
+
+  $('.best-label').remove()
+
+  $("<h3><span class='best-label'>Best Answer: </span></h3>").prependTo(answerID)
+
+  $('.make-best-btn').removeClass('hidden')
+  makeBestButton.addClass('hidden')
+  answerID.prependTo('.answers')
+<% end %>
