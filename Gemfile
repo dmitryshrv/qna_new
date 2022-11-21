@@ -18,6 +18,8 @@ gem "slim-rails"
 gem 'devise'
 #gem 'jquery-rails'
 gem "net-smtp"
+gem 'dotenv-rails'
+gem "aws-sdk-s3", require: false
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

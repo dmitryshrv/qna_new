@@ -4,8 +4,15 @@ Rails.application.routes.draw do
   root "questions#index"
 
   resources :questions do
+    member do
+      delete :delete_file
+    end
+
     resources :answers, shallow: true do
-      member {post :best}
+      member do
+        post :best
+        delete :delete_file
+      end
     end
   end
 

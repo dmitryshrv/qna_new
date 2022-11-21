@@ -1,10 +1,18 @@
-div id="answer-#{answer.id}" class="d-flex mb-3"
+div id="answer-#{answer.id}" class="mb-3"
   -if answer == @best_answer
       h3
         span.best-label Best Answer:
 
   -if answer.persisted?
       =answer.body
+
+  -if answer.files.attached?
+      -answer.files.each do |file|
+        div id = "answer-file-#{file.id}"
+          p =link_to  file.filename.to_s, url_for(file)
+          -if answer.user == current_user
+            p =link_to "Delete file", delete_file_answer_path(answer, file_id: file.id), remote: true, method: :delete
+
 
   -if current_user == @question.user
     =button_to "Make best",
@@ -18,9 +26,11 @@ div id="answer-#{answer.id}" class="d-flex mb-3"
     =form_with model: answer, class: "hidden", html: {id: "edit-answer-#{answer.id}"},local: false do |f|
       .answer-errors
         = render 'shared/errors', resource: @answer
-      =f.label :body, "Body"
-      =f.text_area :body
-      =f.submit 'Save'
+      = f.label :body, "Body"
+      = f.text_area :body
+      = f.label :files
+      = f.file_field :files, multiple: true, direct_upload: true
+      = f.submit 'Save'
 
     div
       =button_to 'Delete answer',

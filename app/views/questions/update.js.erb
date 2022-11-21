@@ -3,6 +3,7 @@ $('.question-errors').html("<%= render 'shared/errors', resource: question %>")
 <% if question.errors.empty? %>
   $('.question-title').html("<%= question.title %>")
   $('.question-body').html("<%= question.body %>")
+  $('.question-files').replaceWith('<%= j render partial: 'file', collection: question.files %>');
   $('#edit-question-form').addClass('hidden')
   $('.edit-question-link').show()
 <% end %>

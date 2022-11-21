@@ -124,4 +124,28 @@ RSpec.describe QuestionsController, type: :controller do
     end
   end
 
+  describe 'DELETE #delete_file' do
+
+    before do
+      question.files.attach(
+        io: File.open(Rails.root.join('spec', 'rails_helper.rb')),
+        filename: 'rails_helper.rb'
+      )
+      login(user)
+    end
+
+    let!(:question) { create(:question, user: user) }
+
+    it 'delete question file' do
+      expect do
+        delete :delete_file, params: { id: question.id, file_id: question.files.first.id}, format: :js
+      end.to change(question.files, :count).by(-1)
+    end
+
+    it 'render delete_file view' do
+      delete :delete_file, params: { id: question, file_id: question.files.first.id }, format: :js
+      expect(response).to render_template :delete_file
+    end
+  end
+
 end

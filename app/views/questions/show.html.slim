@@ -7,6 +7,11 @@
     p.question-body
       =question.body
 
+    div.question-files
+      -if question.files.attached?
+        -question.files.each do |file|
+          = render partial: 'file', collection: question.files
+
     -if current_user == question.user
       p =link_to "Edit", '#', class:"edit-question-link", data: {question_id: question.id}
 
@@ -18,9 +23,11 @@
         = f.text_field :title
         = f.label :body
         = f.text_area :body
+        = f.label :files
+        = f.file_field :files, multiple: true
         = f.submit 'Save'
 
-      =button_to 'Delete question', question_path(question), method: :delete, data: {confirm: 'Are you sure?'}
+  =button_to 'Delete question', question_path(question), method: :delete, data: {confirm: 'Are you sure?'}
 
   h2 Answers
   .answers
@@ -35,6 +42,7 @@
 
       = f.label :body
       = f.text_area :body
+      = f.file_field :files, multiple: true
       = f.submit 'Give answer', class:"btn btn-info"
 
   =link_to 'Back', questions_path
