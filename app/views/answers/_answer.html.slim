@@ -6,6 +6,24 @@ div id="answer-#{answer.id}" class="mb-3"
   -if answer.persisted?
       =answer.body
 
+  - unless answer.links.count.zero?
+      .links
+        p Links:
+        ul
+          - answer.links.each do |link|
+            li id = "answer-link-#{link.id}"
+              = link_to link.name, link.url
+
+              - if link.gist?
+                .link-gist data-gist-id = "#{gist_id(link.url)}"
+                  = javascript_include_tag link.url+".js"
+
+              - if answer.user == current_user
+                p = link_to 'Delete link',
+                            destroy_link_answer_path(answer, link: link),
+                            method: :delete,
+                            remote: true
+
   -if answer.files.attached?
       -answer.files.each do |file|
         div id = "answer-file-#{file.id}"
@@ -17,19 +35,29 @@ div id="answer-#{answer.id}" class="mb-3"
   -if current_user == @question.user
     =button_to "Make best",
                 best_answer_path(answer),
-                class: "make-best-btn #{'hidden' if answer==@best_answer }",
+                class: "make-best-btn #{'hidden ' if answer==@best_answer }",
                 remote: :true
 
   -if current_user == answer.user
     p =link_to "Edit", '#', class:"edit-answer-link", data: {answer_id: answer.id}
 
-    =form_with model: answer, class: "hidden", html: {id: "edit-answer-#{answer.id}"},local: false do |f|
+    =form_with model: answer, class: "hidden link-update", html: {id: "edit-answer-#{answer.id}"},local: false do |f|
       .answer-errors
         = render 'shared/errors', resource: @answer
+
       = f.label :body, "Body"
       = f.text_area :body
       = f.label :files
       = f.file_field :files, multiple: true, direct_upload: true
+
+      h3 Links:
+      #cards
+        = f.fields_for :links do |link|
+          .field
+            = render 'shared/link_fields', f: link
+        .links
+          = link_to_add_association 'add link', f, :links, partial: 'shared/link_fields'
+
       = f.submit 'Save'
 
     div

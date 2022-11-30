@@ -5,6 +5,8 @@ class AnswersController < ApplicationController
     @answer = question.answers.build(answer_params)
     @answer.user = current_user
     @answer.save
+    @new_answer = @question.answers.build
+    @new_answer.links.build
   end
 
   def update
@@ -24,6 +26,7 @@ class AnswersController < ApplicationController
 
     if current_user == @question.user
       @question.mark_as_best(answer)
+      @question.reward&.update(user: @answer.user)
     end
   end
 
@@ -34,6 +37,14 @@ class AnswersController < ApplicationController
     end
   end
 
+  def destroy_link
+    @link = Link.find(params[:link])
+
+    if current_user == answer.user
+      @link.destroy
+    end
+  end
+
   private
 
   def question
@@ -41,14 +52,13 @@ class AnswersController < ApplicationController
   end
 
   def answer
-    #@answer ||= Answer.with_attached_files.find(params[:id])
     @answer ||= Answer.find(params[:id])
   end
 
   helper_method :question
 
   def answer_params
-    params.require(:answer).permit(:body, files: [])
+    params.require(:answer).permit(:body, files: [], links_attributes: [:id, :name, :url, :_destroy])
   end
 end
 
