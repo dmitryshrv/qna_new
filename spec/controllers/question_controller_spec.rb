@@ -21,6 +21,10 @@ RSpec.describe QuestionsController, type: :controller do
   describe 'GET #show' do
     before {get :show, params: { id: question } }
 
+    it 'assigns a new link to answer' do
+      expect(assigns(:answer).links.first).to be_a_new(Link)
+    end
+
     it 'renders show view' do
       expect(response).to render_template :show
     end
@@ -29,6 +33,10 @@ RSpec.describe QuestionsController, type: :controller do
   describe 'GET #new' do
     before { login(user) }
     before { get :new }
+
+    it 'assigns a new link to question' do
+      expect(assigns(:question).links.first).to be_a_new(Link)
+    end
 
     it 'renders show view' do
       expect(response).to render_template :new
@@ -121,6 +129,48 @@ RSpec.describe QuestionsController, type: :controller do
     it 'redirects to index' do
       delete :destroy, params: {id: question}
       expect(response).to redirect_to questions_path
+    end
+  end
+
+  describe 'DELETE #delete_file' do
+
+    before do
+      question.files.attach(
+        io: File.open(Rails.root.join('spec', 'rails_helper.rb')),
+        filename: 'rails_helper.rb'
+      )
+      login(user)
+    end
+
+    let!(:question) { create(:question, user: user) }
+
+    it 'delete question file' do
+      expect do
+        delete :delete_file, params: { id: question.id, file_id: question.files.first.id}, format: :js
+      end.to change(question.files, :count).by(-1)
+    end
+
+    it 'render delete_file view' do
+      delete :delete_file, params: { id: question, file_id: question.files.first.id }, format: :js
+      expect(response).to render_template :delete_file
+    end
+  end
+
+  describe 'DELETE #destroy_link' do
+    before do
+      question.links.create(name: 'test', url: 'http://google.com')
+    end
+    before { login(user) }
+
+    it 'delete question link' do
+      expect do
+        delete :destroy_link, params: { id: question, link: question.links.first.id }, format: :js
+      end.to change(question.links, :count).by(-1)
+    end
+
+    it 'render destroy link view' do
+      delete :destroy_link, params: { id: question, link: question.links.first.id }, format: :js
+      expect(response).to render_template :destroy_link
     end
   end
 

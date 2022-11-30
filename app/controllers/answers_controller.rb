@@ -5,6 +5,8 @@ class AnswersController < ApplicationController
     @answer = question.answers.build(answer_params)
     @answer.user = current_user
     @answer.save
+    @new_answer = @question.answers.build
+    @new_answer.links.build
   end
 
   def update
@@ -24,6 +26,22 @@ class AnswersController < ApplicationController
 
     if current_user == @question.user
       @question.mark_as_best(answer)
+      @question.reward&.update(user: @answer.user)
+    end
+  end
+
+  def delete_file
+    if current_user == answer.user
+      @file = ActiveStorage::Attachment.find(params[:file_id])
+      @file.purge
+    end
+  end
+
+  def destroy_link
+    @link = Link.find(params[:link])
+
+    if current_user == answer.user
+      @link.destroy
     end
   end
 
@@ -40,7 +58,7 @@ class AnswersController < ApplicationController
   helper_method :question
 
   def answer_params
-    params.require(:answer).permit(:body)
+    params.require(:answer).permit(:body, files: [], links_attributes: [:id, :name, :url, :_destroy])
   end
 end
 

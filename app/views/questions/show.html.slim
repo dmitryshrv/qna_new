@@ -7,20 +7,47 @@
     p.question-body
       =question.body
 
+    div.question-files
+      -if question.files.attached?
+        -question.files.each do |file|
+          = render partial: 'file', collection: question.files
+
+    - if question.links
+      .links
+        p Links:
+        ul
+          = render partial: 'link', collection: question.links, question: question
+
     -if current_user == question.user
       p =link_to "Edit", '#', class:"edit-question-link", data: {question_id: question.id}
 
       .question-errors
         = render 'shared/errors', resource: question
 
-      =form_with model: question, class: "hidden", html: {id: "edit-question-form"},local: false do |f|
+      =form_with model: question, class: "hidden link-update", html: {id: "edit-question-form"},local: false do |f|
         = f.label :title
         = f.text_field :title
         = f.label :body
         = f.text_area :body
+        = f.label :files
+        = f.file_field :files, multiple: true
+
+        h3 Links:
+        #cards
+          = f.fields_for :links do |link|
+            .field
+              = render 'shared/link_fields', f: link
+          .links
+            = link_to_add_association 'add link', f, :links, partial: 'shared/link_fields'
+
         = f.submit 'Save'
 
-      =button_to 'Delete question', question_path(question), method: :delete, data: {confirm: 'Are you sure?'}
+  =button_to 'Delete question', question_path(question), method: :delete, data: {confirm: 'Are you sure?'}
+
+  - if question.reward
+    p
+      = 'Reward:'
+      = question.reward.title
 
   h2 Answers
   .answers
@@ -29,12 +56,24 @@
     = render @other_answers
 
   -if user_signed_in?
-    = form_with model: [question, question.answers.build], class:"new-answer", local: false do |f|
+    = form_with model: [question, @answer], class:"new-answer", local: false do |f|
       .new-answer-errors
         = render 'shared/errors', resource: @answer
 
       = f.label :body
       = f.text_area :body
+      = f.file_field :files, multiple: true
+
+      p Links:
+
+      = f.fields_for :links do |l|
+        p
+          = l.label :name, 'Link name'
+          = l.text_field :name
+        p
+          = l.label :url
+          = l.text_field :url
+
       = f.submit 'Give answer', class:"btn btn-info"
 
   =link_to 'Back', questions_path

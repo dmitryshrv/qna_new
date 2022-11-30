@@ -1,10 +1,29 @@
 = render 'shared/errors', resource: @question
 
-= form_with model: question, data: {turbo: false}, local: true do |f|
+= form_with model: question, class: 'link-update', data: {turbo: false}, local: true do |f|
   = f.label :title
   = f.text_field :title
 
   = f.label :body
   = f.text_area :body
+
+  = f.label :files
+  = f.file_field :files, multiple: true
+
+  h3 Links:
+  #cards
+    = f.fields_for :links do |link|
+      .field
+        = render 'shared/link_fields', f: link
+    .links
+      = link_to_add_association 'add link', f, :links, partial: 'shared/link_fields'
+
+  h3 Best answer award
+  = f.fields_for :reward do |r|
+    = r.label :title, 'Title award'
+    = r.text_field :title
+    p
+      = r.label :image
+      = r.file_field :image
 
   = f.submit 'Ask'

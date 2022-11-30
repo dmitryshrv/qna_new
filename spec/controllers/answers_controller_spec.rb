@@ -136,4 +136,48 @@ RSpec.describe AnswersController, type: :controller do
     end
   end
 
+  describe 'DELETE #delete_file' do
+    let(:user) { create(:user) }
+    let!(:answer) { create(:answer, question: question, user: user) }
+
+    before do
+      answer.files.attach(
+        io: File.open(Rails.root.join('spec', 'rails_helper.rb')),
+        filename: 'rails_helper.rb'
+      )
+
+      login(user)
+    end
+
+    it 'delete answer file' do
+      expect do
+        delete :delete_file, params: { id: answer, file_id: answer.files.first.id }, format: :js
+      end.to change(answer.files, :count).by(-1)
+    end
+
+    it 'render delete_file view' do
+      delete :delete_file, params: { id: answer, file_id: answer.files.first.id }, format: :js
+      expect(response).to render_template :delete_file
+    end
+  end
+
+  describe 'DELETE #destroy_link' do
+    let(:user) { create(:user) }
+    let!(:answer) { create(:answer, question: question, user: user) }
+    before do
+      answer.links.create(name: 'test', url: 'http://google.com')
+    end
+    before { login(user) }
+
+    it 'delete answer link' do
+      expect do
+        delete :destroy_link, params: { id: answer, link: answer.links.first.id }, format: :js
+      end.to change(answer.links, :count).by(-1)
+    end
+
+    it 'render destroy link view' do
+      delete :destroy_link, params: { id: answer, link: answer.links.first.id }, format: :js
+      expect(response).to render_template :destroy_link
+    end
+  end
 end

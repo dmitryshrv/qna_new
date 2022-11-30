@@ -1,0 +1,8 @@
+div id = "question-file-#{file.id}"
+  p
+    = link_to file.filename.to_s, url_for(file)
+    - if current_user == question.user
+      p = link_to 'Delete file',
+          delete_file_question_path(question, file_id: file.id),
+          method: :delete,
+          remote: true
